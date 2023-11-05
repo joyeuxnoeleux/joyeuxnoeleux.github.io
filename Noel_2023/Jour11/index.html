@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Jour 11 - Enigme</title>
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <link href="css/index.css" rel="stylesheet">
+</head>
+<body onmousemove="playaudio()">    
+<!-- ____  _                     _                _      __     _       
+    / ___|| |_ ___  _ __     ___| |__   ___  __ _| |_   / _| __| |_ __  
+    \___ \| __/ _ \| '_ \   / __| '_ \ / _ \/ _` | __| | |_ / _` | '_ \ 
+     ___) | || (_) | |_) | | (__| | | |  __/ (_| | |_  |  _| (_| | |_) |
+    |____/ \__\___/| .__/   \___|_| |_|\___|\__,_|\__| |_|  \__,_| .__/ 
+                   |_|                                           |_|    -->
+    <audio id="audio" autoplay loop>
+        <source src="media/altf.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="content">
+        <div class="grid1">
+            <div class="tableau">
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">H</div>
+                            <div class="letter">Z</div>
+                            <div class="letter">F</div>
+                            <div class="letter">A</div>
+                            <div class="letter">I</div>
+                            <div class="letter">D</div>
+                        </div>
+                    </div>
+                    <div class="explain">
+                        Deux lettres sont bonnes mais mal placées.
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">S</div>
+                            <div class="letter">T</div>
+                            <div class="letter">P</div>
+                            <div class="letter">S</div>
+                            <div class="letter">X</div>
+                            <div class="letter">C</div>
+                        </div>
+                    </div>
+                    <div class="explain">
+                        Une lettre est bonne mais mal placée.
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">G</div>
+                            <div class="letter">L</div>
+                            <div class="letter">V</div>
+                            <div class="letter">J</div>
+                            <div class="letter">Q</div>
+                            <div class="letter">N</div>
+                        </div>
+                    </div>
+                    <div class="explain">
+                        Deux lettres sont bonnes et bien placées.
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">Q</div>
+                            <div class="letter">M</div>
+                            <div class="letter">K</div>
+                            <div class="letter">W</div>
+                            <div class="letter">Z</div>
+                            <div class="letter">H</div>
+                        </div>
+                    </div>
+                    <div class="explain2">
+                        Aucune lettre n'est bonne.
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">W</div>
+                            <div class="letter">O</div>
+                            <div class="letter">S</div>
+                            <div class="letter">Q</div>
+                            <div class="letter">M</div>
+                            <div class="letter">K</div>
+                        </div>
+                    </div>
+                    <div class="explain">
+                        Deux lettres sont bonnes mais mal placées.
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="letters">
+                        <div class="grid3">
+                            <div class="letter">I</div>
+                            <div class="letter">J</div>
+                            <div class="letter">N</div>
+                            <div class="letter">V</div>
+                            <div class="letter">O</div>
+                            <div class="letter">F</div>
+                        </div>
+                    </div>
+                    <div class="explain">
+                        Une lettre est bonne et bien placée.
+                    </div>
+                </div>
+            </div>
+            <div class="lock">
+                <img src="https://www.freeiconspng.com/thumbs/lock-icon/lock-icon-11.png">
+                <input class="text" id="code-input" placeholder="Entrez le code à 6 caractères"><br>
+                <button class="pushable">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <span id="submit-button" class="front">
+                        Valider
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="overlay">
+        <button class="pushable">
+            <span class="shadow"></span>
+            <span class="edge"></span>
+            <span id="close-overlay" class="front">
+                Commencer
+            </span>
+        </button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/index.js"></script>
+</body>
