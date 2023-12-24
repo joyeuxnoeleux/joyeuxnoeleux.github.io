@@ -3,7 +3,7 @@ $(document).ready(function () {
     $("#overlay").hide();
 
     // console.log(todayday + ", " + todayhour + ", " + todaymin + ", " + todaysec)
-    var waitTime = new Date("December 24, 2023 18:00:00").getTime();
+    var waitTime = new Date("December 24, 2023 17:00:00").getTime();
 
     // Update the countdown every second
     var countdown = setInterval(function () {
