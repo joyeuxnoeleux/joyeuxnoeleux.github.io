@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+@media (min-width: 0px) {
+
+    body {
+        background-image: url("https://joyeuxnoeleux.github.io/Noel_2022/pictures/nooel.jpg");
+        background-size: 300%;
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+    }
+
+    .body {
+        text-align: center;
+        font-family: 'Poppins';
+        font-size: 22px;
+        /* background-image: url(https://storage.googleapis.com/osf-email-template/backgroundDS.png); */
+        /* background-attachment: fixed; */
+        width: 100%;
+        height: 100%;
+        background-color: rgb(255, 255, 255, 0.5);
+        text-align: center;
+        padding: 10% 0 10% 0;
+    }
+
+    .content {
+        width: 800px;
+        height: 1300px;
+        display: inline-block;
+    }
+
+    .video {
+        margin-top: 700px;
+        width: 100%;
+        height: 387px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    body {
+        background-image: url("https://joyeuxnoeleux.github.io/Noel_2022/pictures/nooel.jpg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+    }
+    .body {
+        text-align: center;
+        font-family: 'Poppins';
+        font-size: 22px;
+        /* background-image: url(https://storage.googleapis.com/osf-email-template/backgroundDS.png); */
+        /* background-attachment: fixed; */
+        width: 100%;
+        height: 100%;
+        background-color: rgb(255, 255, 255, 0.5);
+        text-align: center;
+        padding: 10% 0 10% 0;
+    }
+
+    .content {
+        width: 1242px;
+        height: 600px;
+        display: inline-block;
+    }
+
+    .video {
+        margin-top: 0px;
+        width: 100%;
+        height: 100%;
+    }
+}
