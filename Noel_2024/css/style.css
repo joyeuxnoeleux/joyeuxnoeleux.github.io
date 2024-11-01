@@ -1,0 +1,143 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* background-color: #f3f3f3; */
+    font-family: Arial, sans-serif;
+    background-image: url(../image/back.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.audio-player {
+    width: 280px;
+    text-align: center;
+    background-color: gray;
+    color: white;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    padding: 20px;
+    border: 1px solid #000;
+    display: block; /* Initially visible */
+    z-index: 1000;
+
+}
+
+
+
+.cover {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.cover-light {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.song-info h2, .song-info p {
+    margin: 10px 0;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    /* width: 250px;  */
+    overflow: hidden;
+}
+
+.controls button {
+    font-size: 24px;
+    padding: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.progress-container {
+    background: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    height: 5px;
+    position: relative;
+}
+
+.progress {
+    background: #007bff;
+    height: 5px;
+    width: 0;
+}
+
+.time {
+    font-size: 14px;
+}
+
+.music-block-player {
+    position: absolute;
+    z-index: 998;
+    display: block;
+    opacity: 0;
+    animation: main-loadup 1s forwards linear, main-loadup-bg 10s forwards linear;
+	animation-delay: 7s, 8s;
+}
+
+@keyframes main-loadup {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+        display: block;
+	}
+}
+
+.info-light {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    display: grid;
+    grid-template-columns: 24% 76%;
+    padding: 10px;
+    background-color: gray;
+    height: 70px;
+    font-size: 12px;
+    border: 1px solid black;
+    z-index: 999;
+    color: white;
+}
+
+.song-info-light h2, .song-info-light p {
+    margin: 10px 0px 10px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    /* width: 180px;  */
+    overflow: hidden;
+}
+
+.arrow {
+    transform: rotate(90deg);
+    position: fixed;
+    color: white;
+    fill: white; 
+    left: 270px;
+    bottom: 440px;
+}
+
+.arrow-light {
+    transform: rotate(-90deg);
+    position: fixed;
+    color: white;
+    fill: white; 
+    left: 50px;
+    bottom: 50px;
+}
