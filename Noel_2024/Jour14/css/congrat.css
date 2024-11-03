@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 50px;
+    background-image: url(../media/pictures.png);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 55%;
+    color: greenyellow;
+}
+
+.content {
+    padding-top: 100px;
+}
+
+.rotate {
+    margin-top: 100px;
+    transform: rotate(90deg);
+}

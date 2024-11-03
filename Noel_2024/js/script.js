@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     audio.play();
 });
 
@@ -8,108 +8,138 @@ const songs = [
         artist: "The 8-Bit Big Band",
         cover: "image/the-8-bit-big-band.jpg",
         file: "music/stillalive.mp3"
-    }, 
-    { 
-        name: 'L.O.V.E.',
-        artist: "Michael Bublé",
-        cover: "image/love.png",
+    },
+    {
+        name: 'L-O-V-E',
+        artist: "Nat King Cole",
+        cover: "image/love.jpg",
         file: "music/love.mp3"
     },
-    { 
+    {
         name: "It's Beginning to Look a Lot Like Christmas",
         artist: "Michael Bublé",
         cover: "image/christmas-buble.jpg",
         file: "music/christmas-buble.mp3"
     },
-    { 
+    {
         name: 'two queens in a king sized bed',
         artist: "Girl in Red",
         cover: "image/queens.jpg",
         file: "music/queens.mp3"
     },
-    { 
+    {
         name: 'My Way',
         artist: "Frank Sinatra",
         cover: "image/sinatra.jpg",
         file: "music/way.mp3"
     },
-    { 
+    {
         name: 'Fly Me To The Moon',
         artist: "Frank Sinatra",
         cover: "image/sinatra.jpg",
         file: "music/Moon.mp3"
     },
-    { 
+    {
         name: 'City of Stars',
         artist: "Ryan Gosling, Emma Stone",
         cover: "image/lalaland.jpg",
         file: "music/lalaland.mp3"
     },
-    { 
+    {
         name: 'Silver White',
         artist: "Slowfly",
         cover: "image/slowfly.jpg",
         file: "music/silverwhite.mp3"
     },
-    { 
+    {
         name: 'Promised Land',
         artist: "Slowfly",
         cover: "image/slowfly.jpg",
         file: "music/promisedland.mp3"
     },
-    { 
+    {
         name: 'Carry a song',
         artist: "Wildson",
         cover: "image/wildson.jpg",
         file: "music/wildson.mp3"
     },
-    { 
-        name: 'Under the tree',
-        artist: "Olly Arnold",
-        cover: "image/tree.jpg",
-        file: "music/tree.mp3"
-    },
-    { 
-        name: 'Stockholm Love',
-        artist: "Mathilda June",
-        cover: "image/stockholm.jpg",
-        file: "music/stockholm.mp3"
-    },
-    { 
-        name: 'Vintage Dream',
-        artist: "Mathilda June",
-        cover: "image/vintage.jpg",
-        file: "music/vintage.mp3"
-    },
-    { 
-        name: 'Under the same stars',
-        artist: "Flickering",
-        cover: "image/samestars.jpg",
-        file: "music/samestars.mp3"
-    },
-    { 
+    {
         name: 'Moon River',
         artist: "Stella Cole",
         cover: "image/river.jpg",
         file: "music/river.mp3"
     },
-    { 
+    {
+        name: 'Under the tree',
+        artist: "Olly Arnold",
+        cover: "image/tree.jpg",
+        file: "music/tree.mp3"
+    },
+    {
+        name: 'Stockholm Love',
+        artist: "Mathilda June",
+        cover: "image/stockholm.jpg",
+        file: "music/stockholm.mp3"
+    },
+    {
+        name: 'Vintage Dream',
+        artist: "Mathilda June",
+        cover: "image/vintage.jpg",
+        file: "music/vintage.mp3"
+    },
+    {
+        name: 'Under the same stars',
+        artist: "Flickering",
+        cover: "image/samestars.jpg",
+        file: "music/samestars.mp3"
+    },
+    {
         name: 'Flowers',
         artist: "Stella Cole",
         cover: "image/flowers.jpg",
         file: "music/flowers.mp3"
     },
-    { 
-        name: "That's what I want for Christmas" ,
+    {
+        name: "That's what I want for Christmas",
         artist: "Stella Cole",
         cover: "image/wantchristmas.jpg",
         file: "music/wantchristmas.mp3"
     },
-    { 
+    {
+        name: "Dream A Little Dream Of Me",
+        artist: "Ella Fitzgerald, Louis Armstrong",
+        cover: "image/Dream.jpg",
+        file: "music/Dream.mp3"
+    },
+    {
+        name: "Cheek To Cheek",
+        artist: "Ella Fitzgerald, Louis Armstrong",
+        cover: "image/cheek.jpg",
+        file: "music/cheek.mp3"
+    },
+    {
         name: 'Christmas Dreaming',
         artist: "Stella Cole",
         cover: "image/dreaming.jpg",
         file: "music/dreaming.mp3"
+    },
+    {
+        name: 'I Fall in Love Too Easily',
+        artist: "Chet Baker",
+        cover: "image/baker.jpg",
+        file: "music/fall-love.mp3"
+    },
+    {
+        name: 'I Put A Spell On You',
+        artist: "Nina Simone",
+        cover: "image/spell.jpg",
+        file: "music/spell.mp3"
+    },
+    {
+        name: "Ain't Got No",
+        artist: "Nina Simone",
+        cover: "image/aint.jpg",
+        file: "music/aint.mp3"
     }
 ];
 
@@ -151,9 +181,9 @@ function playPause() {
 }
 
 function playaudio() {
-    if(n == 0) {
+    if (n == 0) {
         audio.play();
-        n=1;
+        n = 1;
     }
 }
 
@@ -162,7 +192,7 @@ audio.addEventListener('timeupdate', () => {
     const { duration, currentTime } = audio;
     const progressPercent = (currentTime / duration) * 100;
     progress.style.width = `${progressPercent}%`;
-    
+
     // Time calculation
     let currentMinutes = Math.floor(currentTime / 60);
     let currentSeconds = Math.floor(currentTime % 60);
@@ -207,7 +237,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function hideDiv() {
-    if( document.getElementById("audio-player").style.display == "none") {
+    if (document.getElementById("audio-player").style.display == "none") {
         document.getElementById("audio-player").style.display = "block";
     } else {
         document.getElementById("audio-player").style.display = "none";

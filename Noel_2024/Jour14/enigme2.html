@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jour 14</title>
+    <link rel="stylesheet" href="css/enigme2.css">
+</head>
+
+<body onclick="playaudio()">
+    <audio id="audio">
+        <source src="media/clock.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="container">
+        <!-- <h1>Mot caché</h1> -->
+
+        <div class="block-enigme">
+            <p id="theme">Thème: </p>
+            <p id="indice"></p>
+            <div class="grid">
+                <div class="box">2 ABC</div>
+                <div class="box">3 DEF</div>
+                <div class="box">4 GHI</div>
+                <div class="box">5 JKL</div>
+                <div class="box">6 MNO</div>
+                <div class="box">7 PQRS</div>
+                <div class="box">8 TUV</div>
+                <div class="box">9 WXYZ</div>
+            </div>
+        </div>
+        <label for="guess"></label>
+        <input type="text" id="guess" placeholder="*****"><br>
+        <button onclick="checkAnswer()">Valider</button>
+
+        <div id="message"></div>
+    </div>
+    <script src="js/enigme2.js"></script>
+    <script src="js/sound.js"></script>
+</body>
+
+</html>
