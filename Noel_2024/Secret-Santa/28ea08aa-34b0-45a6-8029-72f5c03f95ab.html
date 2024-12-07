@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cher Gilbert</title>
+    <link rel="stylesheet" href="./css/letter.css">
+</head>
+<body>
+    <div class="container">
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="letter">
+                    <div class="text">
+                        <strong>Cher Gilbert</strong>
+                        <p>
+                            Cette année encore, le père Noël a besoin de toi. Tu devras donc faire un cadeau à Eric pour l'aider. <br> 
+                            Bisous, Père Noël 
+                        </p>
+                        <!-- <img src="./pictures/Antoine.jpg" width="100%"> -->
+                    </div>
+                </div>
+            </div>
+            <div class="heart"><img src="./pictures/sceau-gilbert.png"></div>
+        </div>
+    </div>
+    <script>
+        const envelope = document.querySelector('.envelope-wrapper');
+        envelope.addEventListener('click', () => {
+            envelope.classList.toggle('flap');
+        });
+    </script>
+</body>
+</html>
