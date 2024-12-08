@@ -67,7 +67,7 @@ body{
 }
 
 .envelope > .letter > .text {
-  font-family: Brush Script MT, Brush Script Std, cursive ;
+  font-family: Didot, serif ;
   color: var(--txt-color);
   text-align: left;
   font-size: 15px;
