@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>christmasOS — Connexion</title>
+  <!-- Polices Google (si en local, remplacez ou supprimez) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Courgette&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#0b1221; /* night sky */
+      --bg2:#11304a; /* deep teal */
+      --card:#0f1724;
+      --accent:#ff4d6d; /* festive red */
+      --accent-2:#4ee89a; /* mint */
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Montserrat,system-ui,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent), linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden;
+    }
+
+    /* Gentle snow using pseudo elements */
+    .sky{
+      position:fixed;inset:0;pointer-events:none;
+    }
+    .snow{
+      position:absolute;inset:0;background-image:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06) 0 1px, transparent 2px), radial-gradient(circle at 40% 30%, rgba(255,255,255,0.05) 0 1px, transparent 2px), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04) 0 1px, transparent 2px);
+      background-size: 100px 100px, 140px 140px, 200px 200px;
+      animation: drift 18s linear infinite;
+      opacity:0.9;
+      mix-blend-mode:screen;
+    }
+    @keyframes drift{ from{transform:translateY(-20px)} to{transform:translateY(60px)} }
+
+    /* Subtle stars */
+    .stars{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0 1px, transparent 2px), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.05) 0 1px, transparent 2px);opacity:0.6}
+
+    .container{
+      position:relative;display:grid;place-items:center;height:100vh;padding:32px;
+    }
+
+    /* Logo */
+    .logo{
+      position:absolute;top:48px;left:48px;display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none;
+      filter:drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+    }
+    .logo .tree{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,#0f7a3e,#0b4f29);display:grid;place-items:center;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
+    .logo .tree:before{content:"";width:30px;height:30px;background-image:radial-gradient(circle at 30% 25%, #ffeb7a 0 4px, transparent 6px);border-radius:50%;box-shadow:0 0 14px rgba(255,235,122,0.18)}
+    .logo h1{font-size:18px;margin:0;font-weight:800;letter-spacing:0.4px}
+    .logo p{margin:0;font-size:12px;opacity:0.8}
+
+    /* Login card */
+    .card{
+      width:360px;max-width:92%;background:linear-gradient(180deg,var(--glass),var(--glass-2));border-radius:18px;padding:28px;border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(8px);box-shadow:0 8px 40px rgba(3,6,20,0.6);
+    }
+    .card h2{font-size:20px;margin:0 0 8px;font-weight:800}
+    .card p.lead{margin:0 0 18px;color:#cfe9d9;opacity:0.9}
+
+    .input{
+      display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
+    }
+    label{font-size:12px;opacity:0.8}
+    input[type="text"],input[type="password"]{
+      width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);color:inherit;font-size:14px;outline:none;transition:box-shadow .18s,transform .12s;
+    }
+    input:focus{box-shadow:0 6px 18px rgba(0,0,0,0.45);transform:translateY(-2px)}
+
+    .actions{display:flex;align-items:center;gap:12px;margin:6px 0 40px 0}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(2,6,23,0.6);
+    }
+    .btn:active{transform:translateY(1px)}
+
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#ff7b8f);color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit}
+
+    .small{font-size:12px;opacity:0.85}
+
+    .footer{margin-top:14px;font-size:12px;display:flex;justify-content:space-between;align-items:center;color:#cfe9d9;opacity:0.85}
+
+    /* Elf hat on avatar */\    
+    .avatar{
+      width:84px;height:84px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#0b1620);display:grid;place-items:center;margin:0 auto 12px;position:relative;border:1px solid rgba(255,255,255,0.04);
+    }
+    .avatar .face{font-family:Courgette, cursive;font-size:32px;opacity:0.95}
+    .hat{position:absolute;top:-12px;left:calc(50% - 26px);width:52px;height:26px;border-radius:26px 26px 6px 6px;background:linear-gradient(90deg,#b71c1c,#ff4d6d);box-shadow:0 6px 18px rgba(0,0,0,0.35);transform:rotate(-12deg)}
+    .hat:after{content:'';position:absolute;right:6px;top:-6px;width:12px;height:12px;border-radius:50%;background:white}
+
+    /* Decorative lights */
+    .lights{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;gap:8px;margin: 0 0 30px 0;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .light{width:8px;height:8px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,0.5);animation:blink 1.6s infinite ease-in-out}
+    .l1{background:var(--accent);animation-delay:0s}
+    .l2{background:var(--accent-2);animation-delay:.4s}
+    .l3{background:#ffd26a;animation-delay:.8s}
+    .l4{background:#66a0ff;animation-delay:1.2s}
+    .light{width:8px;height:8px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,0.5)}
+    .l1{background:var(--accent)}.l2{background:var(--accent-2)}.l3{background:#ffd26a}.l4{background:#66a0ff}
+
+    /* Responsive */
+    @media (max-width:420px){
+      .logo{left:18px;top:18px}
+      .card{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <a class="logo" href="#" aria-label="christmasOS">
+    <div class="tree" aria-hidden="true"></div>
+    <div>
+      <h1>christmasOS</h1>
+      <p>Edition festive</p>
+    </div>
+  </a>
+
+  <div class="sky" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="snow"></div>
+  </div>
+
+  <main class="container">
+    <form class="card" onsubmit="event.preventDefault();signIn()" aria-labelledby="signin-title">
+      <div class="avatar" aria-hidden="true">
+        <div class="hat" role="img" aria-hidden="true"></div>
+        <div class="face">Ho Ho Ho</div>
+      </div>
+
+      <h2 id="signin-title">Connexion — christmasOS</h2>
+      <p class="lead">Bienvenue, ami(e) du Pôle Nord — entre ton identifiant pour commencer.</p>
+
+      <div class="input">
+        <label for="user">Identifiant</label>
+        <input id="user" type="text" placeholder="ex: santa.claus" required autocomplete="username">
+      </div>
+
+      <div class="input">
+        <label for="pass">Mot de passe</label>
+        <input id="pass" type="password" placeholder="********" required autocomplete="current-password">
+      </div>
+
+      <!-- <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="small"><input id="remember" type="checkbox"> <label for="remember">Se souvenir</label></div>
+        <div class="small"><a href="#">Mot de passe oublié?</a></div>
+      </div> -->
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Se connecter</button>
+        <!-- <button type="button" class="btn btn-ghost" onclick="demoCreds()">Démo</button> -->
+      </div>
+      
+<div>&nbsp</div>
+      <div class="footer">
+        <span>Version 1.0.0 — christmasOS</span>
+        <div>&nbsp</div>
+        <!-- <div style="height: 300px;"></div> -->
+        <div class="lights" aria-hidden="true">
+          <div class="light l1"></div>
+          <div class="light l2"></div>
+          <div class="light l3"></div>
+          <div class="light l4"></div>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    function signIn(){
+      const user = document.getElementById('user').value.trim();
+      const pass = document.getElementById('pass').value;
+      if(!user || !pass) return alert('Complète les champs.');
+
+      // Gestion réelle des comptes
+      if(user === 'pere.noel' && pass === 'supernoel'){
+        window.location.href = 'index2.html';
+        return;
+      }
+      if(user === 'lutin1' && pass === 'cheerlutin'){
+        window.location.href = 'index3.html';
+        return;
+      }
+
+      alert('Identifiants incorrects !');
+    }
+
+    function demoCreds(){
+      document.getElementById('user').value = 'santa.claus';
+      document.getElementById('pass').value = 'cheer2025';
+    }
+
+    // Petit utilitaire pour échapper
+    function escapeHtml(unsafe){
+      return unsafe.replace(/[&\\"'<>]/g, function(m){return {'&':'&amp;','\\':'\\\\','"':'&quot;',"'":"&#39;","<":"&lt;",">":"&gt;"}[m]});
+    }
+  </script>
+  <!-- Effet sonore -->
+  <audio id="jingle" autoplay loop>
+    <source src="jingle.mp3" type="audio/mpeg">
+  </audio>
+</body>
+</html>

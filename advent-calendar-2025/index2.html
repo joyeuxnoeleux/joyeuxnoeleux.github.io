@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>christmasOS — Desktop (En ligne)</title>
+    <!-- Leaflet CSS (nécessite internet) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            /* color: white */
+        }
+
+        body {
+            /* background: linear-gradient(#0b1221, #11304a); */
+            background-image: url(https://images7.alphacoders.com/128/thumb-1920-1286499.jpg);
+            background-position: center;
+            background-size: cover;
+            height: 100vh;
+            overflow: hidden
+        }
+
+        /* Taskbar bottom */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px
+        }
+
+        .start {
+            cursor: pointer;
+            font-size: 18px
+        }
+
+        .clock {
+            font-weight: bold;
+            font-size: 14px
+        }
+
+        /* Start Menu */
+        .start-menu {
+            position: fixed;
+            bottom: 48px;
+            left: 16px;
+            width: 260px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 14px;
+            transform: scale(0);
+            transform-origin: bottom left;
+            transition: .25s
+        }
+
+        .start-menu.open {
+            transform: scale(1)
+        }
+
+        .app-launcher {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        /* Desktop icons */
+        .desktop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 48px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 20px
+        }
+
+        .icon {
+            width: 70px;
+            text-align: center;
+            cursor: pointer
+        }
+
+        .icon img {
+            width: 48px;
+            margin-bottom: 6px
+        }
+
+        .icon span {
+            font-size: 13px;
+            display: block;
+            text-shadow: 0 2px 4px #000
+        }
+
+        /* Windows popups */
+        .window {
+            position: absolute;
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            width: 520px;
+            height: 420px;
+            display: none;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+            z-index: 10
+        }
+
+        .titlebar {
+            background: #0d1726;
+            padding: 8px;
+            border-radius: 8px 8px 0 0;
+            cursor: move;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .close {
+            cursor: pointer;
+            padding: 4px 8px;
+            background: #ff4d6d;
+            border-radius: 4px
+        }
+
+        .content {
+            padding: 0;
+            font-size: 14px;
+            overflow: hidden;
+            height: calc(100% - 46px)
+        }
+
+        /* Map full container for leaflet */
+        #leafletMap {
+            width: 100%;
+            height: 100%
+        }
+
+        /* Lutin notes style */
+        .note {
+            background: #fff3c4;
+            color: black;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 200px;
+            position: absolute;
+            transform: rotate(-4deg);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3)
+        }
+
+        /* Pulsing marker style (CSS animated circle) */
+        .pulse-marker {
+            width: 18px;
+            height: 18px;
+            margin-left: -9px;
+            margin-top: -9px;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.9);
+            box-shadow: 0 0 0 rgba(255, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .pulse-marker:after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            box-shadow: 0 0 0 rgba(255, 0, 0, 0.5);
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1
+            }
+
+            70% {
+                transform: scale(2.6);
+                opacity: 0
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+
+        /* Controls (zoom buttons) */
+        .map-controls {
+            position: absolute;
+            left: 12px;
+            bottom: 62px;
+            z-index: 1200
+        }
+
+        .map-controls button {
+            display: block;
+            margin-bottom: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer
+        }
+
+        @media (max-width:600px) {
+            .window {
+                width: 92%;
+                height: 62%
+            }
+        }
+
+        #paintCanvas {
+            background: white;
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .toolbar {
+            background: #2a3446;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input,
+        .toolbar select,
+        .toolbar button {
+            cursor: pointer;
+        }
+
+        #tetrisCanvas {
+            display: block;
+            margin: auto;
+            background: #111;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Desktop -->
+    <div class="desktop">
+        <div class="icon" onclick="openWindow('notes')">
+            <img src="https://cdn-icons-png.flaticon.com/512/3997/3997608.png" alt="notes">
+            <span>Lutins_fun.txt</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('gifts')">
+            <img src="https://cdn-icons-png.flaticon.com/512/744/744922.png" alt="cadeaux">
+            <span>Cadeaux</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('meteo')">
+            <img src="https://cdn-icons-png.flaticon.com/512/4151/4151022.png" alt="meteo">
+            <span>Météo</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('map')">
+            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="map">
+            <span>Carte</span>
+        </div>
+        <div class="icon" onclick="openWindow('paint')"><img
+                src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png"><span>Paint</span></div>
+        <div class="icon" onclick="openWindow('imageApp')"><img
+                src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png"><span>Image</span></div>
+        <div class="icon" onclick="openWindow('webapp')">
+            <img src="icons/web.png" alt="" />
+            <span>Navigateur</span>
+        </div>
+        <div class="icon" onclick="openWindow('webapp2')">
+            <img src="icons/web.png" alt="" />
+            <span>Navigateur</span>
+        </div>
+
+    </div>
+
+    <!-- Popup windows -->
+    <div class="window" id="notes">
+        <div class="titlebar" onmousedown="dragStart(event,'notes')">Lutins_fun.txt <span class="close"
+                onclick="closeWindow('notes')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;overflow:auto;height:100%">
+                <p>Pour le père Noel</p><br>
+                • N'oublie pas de nourrir les rennes.<br>
+                • Le lutin 7 a encore perdu ses chaussettes.<br>
+                • La machine à emballer fait des étincelles... encore.<br>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="gifts">
+        <div class="titlebar" onmousedown="dragStart(event,'gifts')">Cadeaux <span class="close"
+                onclick="closeWindow('gifts')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;">Liste de cadeaux en fabrication...</div>
+        </div>
+    </div>
+
+    <div class="window" id="meteo">
+        <div class="titlebar" onmousedown="dragStart(event,'meteo')">Météo <span class="close"
+                onclick="closeWindow('meteo')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;">Pôle Nord : -18°C ❄️ Neige légère.</div>
+        </div>
+    </div>
+
+    <!-- Map application (online Leaflet) -->
+    <div class="window" id="map">
+        <div class="titlebar" onmousedown="dragStart(event,'map')">Carte - Ou est le père Noël<span class="close"
+                onclick="closeWindow('map')">X</span></div>
+        <div class="content" id="mapContent">
+            <div id="leafletMap"></div>
+        </div>
+    </div>
+
+    <!-- Paint Application Avancée -->
+    <div class="window" id="paint">
+        <div class="titlebar" onmousedown="dragStart(event,'paint')">
+            Paint <span class="close" onclick="closeWindow('paint')">X</span>
+        </div>
+        <div class="content">
+            <div class="toolbar">
+                <label>Couleur:</label>
+                <input type="color" id="colorPicker" value="#000000">
+                <label>Taille:</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5">
+                <label>Outil:</label>
+                <select id="toolSelect">
+                    <option value="brush">Crayon</option>
+                    <option value="marker">Marqueur</option>
+                    <option value="spray">Spray</option>
+                    <option value="eraser">Gomme</option>
+                </select>
+                <button id="clearBtn">Effacer tout</button>
+                <button id="undoBtn">Undo</button>
+                <button id="redoBtn">Redo</button>
+                <button id="downloadBtn">Télécharger</button>
+            </div>
+            <canvas id="paintCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Tetris fonctionnel
+    <div class="window" id="tetris">
+        <div class="titlebar" onmousedown="dragStart(event,'tetris')">
+            Tetris <span class="close" onclick="closeWindow('tetris')">X</span>
+        </div>
+        <div class="content">
+            <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+        </div>
+    </div> -->
+
+    <!-- Application Web (iframe) -->
+    <div class="window" id="webapp" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp')">
+            Web Viewer <span class="close" onclick="closeWindow('webapp')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="https://drive.google.com/file/d/10k6Wz1vlLIaNcm7IjvDxEyhJeNyTR0dm/preview" style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="window" id="webapp2" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp2')">
+            Web Viewer <span class="close" onclick="closeWindow('webapp2')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="https://www.dropbox.com/scl/fi/tdmuq04eex2sd5dwc7hqx/Jour24.mp4?rlkey=kmtl7fg1rfdzcxieh1w6rfdw6&raw=1" style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Application Web (iframe) -->
+    <div class="window" id="tetris" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp')">
+            Web Viewer <span class="close" onclick="closeWindow('webapp')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="/tetris.html" style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+
+
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <div class="app-launcher" onclick="openWindow('notes')">📜 Notes</div>
+        <div class="app-launcher" onclick="openWindow('gifts')">🎁 Cadeaux</div>
+        <div class="app-launcher" onclick="openWindow('meteo')">❄️ Météo</div>
+        <div class="app-launcher" onclick="openWindow('map')">🗺️ Carte</div>
+        <div class="app-launcher" onclick="openWindow('paint')">🗺️ Paint</div>
+        <div class="app-launcher" onclick="openWindow('tetris')">🗺️ Tetris</div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="start" onclick="toggleStart()">🎄 Start</div>
+        <div id="clock" class="clock"></div>
+    </div>
+
+    <!-- Lutins notes on desktop -->
+    <!-- <div class="note" style="top:120px;left:40px">N’oublie pas de nourrir les rennes ! 🦌</div>
+  <div class="note" style="top:280px;left:220px;transform:rotate(3deg)">La machine à cadeaux fait encore des bruits bizarres…</div>
+  <div class="note" style="top:180px;right:60px">Le lutin 7 a encore perdu ses chaussettes.</div> -->
+
+    <!-- Map controls (buttons) -->
+    <div class="map-controls" id="mapControls" style="display:none">
+        <button id="zoomInBtn">+</button>
+        <button id="zoomOutBtn">−</button>
+        <button id="locateBtn">📍 Laponie</button>
+    </div>
+
+    <!-- Leaflet JS (nécessite internet) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="tetris.js"></script>
+    <script src="webapp.js"></script>
+    <script>
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+        let paths = [];
+        let undone = [];
+        let currentPath = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight - 36;
+            redraw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let brushColor = document.getElementById('colorPicker').value;
+        let brushSize = document.getElementById('brushSize').value;
+        let tool = document.getElementById('toolSelect').value;
+
+        document.getElementById('colorPicker').addEventListener('input', e => brushColor = e.target.value);
+        document.getElementById('brushSize').addEventListener('input', e => brushSize = e.target.value);
+        document.getElementById('toolSelect').addEventListener('change', e => tool = e.target.value);
+
+        document.getElementById('clearBtn').addEventListener('click', () => { paths = []; undone = []; redraw(); });
+        document.getElementById('undoBtn').addEventListener('click', () => { if (paths.length) { undone.push(paths.pop()); redraw(); } });
+        document.getElementById('redoBtn').addEventListener('click', () => { if (undone.length) { paths.push(undone.pop()); redraw(); } });
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'drawing.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        function startPosition(e) { painting = true; currentPath = []; draw(e); }
+        function endPosition() { painting = false; if (currentPath.length) { paths.push(currentPath); currentPath = []; undone = []; ctx.beginPath(); } }
+        function draw(e) {
+            if (!painting) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            let color = brushColor;
+            let size = brushSize;
+            if (tool === 'eraser') { color = 'white'; }
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = size;
+            ctx.strokeStyle = color;
+
+            if (tool === 'brush' || tool === 'marker' || tool === 'eraser') {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+            else if (tool === 'spray') {
+                for (let i = 0; i < 20; i++) {
+                    const offsetX = (Math.random() - 0.5) * size * 2;
+                    const offsetY = (Math.random() - 0.5) * size * 2;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
+                }
+            }
+            currentPath.push({ x, y, color, size, tool });
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mouseleave', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        function redraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            paths.forEach(path => {
+                ctx.beginPath();
+                path.forEach(point => {
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.lineWidth = point.size;
+                    ctx.strokeStyle = (point.tool === 'eraser') ? 'white' : point.color;
+                    if (point.tool === 'spray') {
+                        for (let i = 0; i < 20; i++) {
+                            const offsetX = (Math.random() - 0.5) * point.size * 2;
+                            const offsetY = (Math.random() - 0.5) * point.size * 2;
+                            ctx.fillStyle = point.color;
+                            ctx.fillRect(point.x + offsetX, point.y + offsetY, 1, 1);
+                        }
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(point.x, point.y);
+                    }
+                });
+            });
+        }
+        // Clock
+        function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString(); }
+        setInterval(updateClock, 1000); updateClock();
+
+        // Start menu
+        function toggleStart() { document.getElementById('startMenu').classList.toggle('open'); }
+
+        // Windows controls
+        function openWindow(id) {
+            let w = document.getElementById(id);
+            w.style.display = 'block';
+            document.querySelectorAll('.window').forEach(el => el.style.zIndex = 8);
+            w.style.zIndex = 12;
+            if (!w.style.left) {
+                w.style.top = (100 + Math.random() * 120) + 'px';
+                w.style.left = (120 + Math.random() * 120) + 'px';
+            }
+
+            // Spécial Paint : redimensionner le canvas et redraw
+            if (id === 'paint') {
+                setTimeout(() => {
+                    resizeCanvas();  // redimensionne le canvas correctement
+                    redraw();        // redraw les chemins (même s'il n'y a pas encore de dessin)
+                }, 50);
+            }
+
+            // Spécial Map
+            if (id === 'map') {
+                setTimeout(() => {
+                    if (!window.leafletMap) initLeaflet();
+                    window.leafletMap.invalidateSize();
+                }, 200);
+            }
+
+
+        }
+
+        function closeWindow(id) { document.getElementById(id).style.display = 'none'; if (id === 'map') document.getElementById('mapControls').style.display = 'none'; }
+
+        // Dragging windows
+        let dragData = null;
+        function dragStart(e, id) {
+            const w = document.getElementById(id);
+            // ensure it's on top
+            document.querySelectorAll('.window').forEach(el => el.style.zIndex = 8);
+            w.style.zIndex = 14;
+            dragData = { w, offX: e.clientX - w.offsetLeft, offY: e.clientY - w.offsetTop };
+            document.onmousemove = dragMove; document.onmouseup = dragEnd;
+        }
+        function dragMove(e) { if (!dragData) return; dragData.w.style.left = (e.clientX - dragData.offX) + 'px'; dragData.w.style.top = (e.clientY - dragData.offY) + 'px'; }
+        function dragEnd() { dragData = null; document.onmousemove = null; document.onmouseup = null; }
+
+        // --- Leaflet map initialization (online) ---
+        function initLeaflet() {
+            try {
+                const coords = [66.5, 25.7]; // Laponie (Rovaniemi area)
+                const map = L.map('leafletMap', { zoomControl: false }).setView(coords, 4);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Custom pulsing marker using divIcon
+                const pulsing = L.divIcon({
+                    className: '',
+                    html: '<div class="pulse-marker"></div>',
+                    iconSize: [18, 18]
+                });
+                const marker = L.marker(coords, { icon: pulsing }).addTo(map).bindPopup('<b>Laponie</b><br>Père Noël (approx)');
+
+                // Simple controls
+                document.getElementById('zoomInBtn').onclick = () => { map.zoomIn(); };
+                document.getElementById('zoomOutBtn').onclick = () => { map.zoomOut(); };
+                document.getElementById('locateBtn').onclick = () => { map.setView(coords, 6); marker.openPopup(); };
+
+                window.leafletMap = map;
+            } catch (e) {
+                // Fallback UI if tiles can't load
+                const el = document.getElementById('mapContent');
+                el.innerHTML = '<div style="padding:16px;color:#ffd;">Impossible de charger la carte en ligne — vérifie ta connexion ou ouvre la version offline.</div>';
+            }
+        }
+
+        // Initialize map when opening for the first time
+        let leafletInitialized = false;
+        const origOpenWindow = openWindow;
+        openWindow = function (id) { origOpenWindow(id); if (id === 'map' && !leafletInitialized) { leafletInitialized = true; setTimeout(initLeaflet, 250); } };
+
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const sm = document.getElementById('startMenu');
+            const start = document.querySelector('.start');
+            if (!sm.contains(e.target) && !start.contains(e.target)) sm.classList.remove('open');
+        });
+    </script>
+
+</body>
+
+</html>
