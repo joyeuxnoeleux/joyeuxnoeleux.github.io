@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fake CMD — Fullscreen</title>
+    <style>
+        :root {
+            --bg: #0b0b0b;
+            --text: #9aed9a;
+            --muted: #6f8b6f;
+            --accent: #6ff;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0
+        }
+
+        body {
+            background: radial-gradient(ellipse at top left, rgba(10, 10, 10, 1) 0%, rgba(6, 6, 6, 1) 60%);
+            color: var(--text);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100vh;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* full screen terminal container */
+        .terminal {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            padding: 18px;
+            display: flex;
+            gap: 18px;
+        }
+
+        /* left: tree area */
+        .sidebar {
+            width: 360px;
+            max-width: 40%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border-radius: 8px;
+            padding: 14px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .main {
+            flex: 1;
+            background: transparent;
+            border-radius: 8px;
+            padding: 14px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        h1 {
+            font-size: 14px;
+            margin: 0 0 8px 0;
+            color: var(--muted)
+        }
+
+        /* tree styles */
+        .tree {
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px
+        }
+
+        .node:hover {
+            background: rgba(255, 255, 255, 0.02)
+        }
+
+        .caret {
+            width: 12px;
+            display: inline-block;
+            text-align: center
+        }
+
+        .folder {
+            color: var(--accent)
+        }
+
+        .file {
+            color: var(--text)
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .selected {
+            outline: 2px solid rgba(111, 139, 111, 0.12);
+            background: rgba(255, 255, 255, 0.01)
+        }
+
+        /* terminal area */
+        .screen {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 6px;
+            height: calc(100% - 46px);
+            padding: 12px;
+            font-size: 13px;
+            overflow: auto;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        .prompt {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start
+        }
+
+        .ps1 {
+            color: var(--accent);
+            min-width: 160px
+        }
+
+        .output {
+            flex: 1;
+            white-space: pre-wrap
+        }
+
+        .cmdline {
+            display: inline-block;
+            word-break: break-all
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 9px;
+            height: 18px;
+            background: var(--text);
+            margin-left: 3px;
+            animation: blink 1s steps(2) infinite
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0
+            }
+        }
+
+        .help {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px
+        }
+
+        /* small footer */
+        .footer {
+            position: fixed;
+            right: 16px;
+            bottom: 10px;
+            color: rgba(255, 255, 255, 0.12);
+            font-size: 11px
+        }
+
+        /* responsive */
+        @media (max-width:700px) {
+            .sidebar {
+                display: none
+            }
+        }
+
+        /* clickable file content style */
+        .file-content {
+            background: #07100a;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            overflow: auto;
+            height: 100%
+        }
+
+        .path {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="terminal" tabindex="0">
+        <div class="sidebar" id="sidebar">
+            <h1>Folder tree</h1>
+            <div class="tree" id="tree"></div>
+            <div class="help">Click a folder to expand/collapse. Click a file to open it in the right pane. Type <span
+                    class="muted">tree</span> or <span class="muted">open &lt;path&gt;</span> in the prompt below.</div>
+        </div>
+        <div class="main">
+            <div class="screen" id="screen">
+                <div class="output" id="output">Welcome to Fake CMD — type <span class="muted">help</span> for commands.
+
+                    Examples: <span class="muted">tree</span>, <span class="muted">open docs/readme.txt</span>, <span
+                        class="muted">clear</span>
+                </div>
+                <div style="height:10px"></div>
+                <div class="prompt">
+                    <div class="ps1">C:\Users\You&gt;</div>
+                    <div class="cmd">
+                        <span contenteditable="true" id="cmdline" class="cmdline" spellcheck="false"></span><span
+                            class="cursor" id="cursor"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">Full screen fake CMD — HTML / CSS / JS</div>
+
+    <script>
+        // Sample file tree data
+        const fs = {
+            name: 'root',
+            type: 'folder',
+            children: [
+                {
+                    name: 'login', type: 'folder', children: [
+                        { name: 'Bloqués', type: 'file', content: 'This is a fake readme.\nUse the prompt to open files: open docs/readme.txt\n\nYou can edit this file in the JS data structure.' },
+                        { name: 'Actifs', type: 'file', content: '# pere_noel\n*****\n \n#usr1\n*****\n' }
+                    ]
+                },
+                {
+                    name: 'src', type: 'folder', children: [
+                        { name: 'index.js', type: 'file', content: 'console.log("hello from fake-cmd!")' },
+                        { name: 'app.css', type: 'file', content: '/* styles */' }
+                    ]
+                },
+                { name: 'notes.txt', type: 'file', content: 'Personal notes:\n- buy milk\n- finish thesis\n' },
+                {
+                    name: 'projects', type: 'folder', children: [
+                        {
+                            name: 'centralized', type: 'folder', children: [
+                                { name: 'specs.pdf', type: 'file', content: '[binary pdf — simulated]' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+        const treeEl = document.getElementById('tree');
+        const outputEl = document.getElementById('output');
+        const cmdline = document.getElementById('cmdline');
+        const cursor = document.getElementById('cursor');
+        const sidebar = document.getElementById('sidebar');
+
+        // render tree
+        function renderTree(node, container, path = '') {
+            const ul = document.createElement('div');
+            (node.children || []).forEach(child => {
+                const item = document.createElement('div');
+                item.className = 'node';
+                const childPath = path + (node.name === 'root' ? '' : node.name + '/') + child.name;
+                const caret = document.createElement('span'); caret.className = 'caret';
+                if (child.type === 'folder') caret.textContent = '\u25B6'; else caret.textContent = '\u2022';
+                const label = document.createElement('span');
+                label.className = child.type === 'folder' ? 'folder' : 'file';
+                label.textContent = child.name;
+                item.appendChild(caret);
+                item.appendChild(label);
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (child.type === 'folder') {
+                        // toggle
+                        if (item.getAttribute('data-open') === '1') {
+                            item.setAttribute('data-open', '0'); caret.textContent = '\u25B6';
+                            // remove children
+                            const existing = item.querySelector('.children'); if (existing) existing.remove();
+                        } else {
+                            item.setAttribute('data-open', '1'); caret.textContent = '\u25BC';
+                            const wrapper = document.createElement('div'); wrapper.className = 'children'; wrapper.style.paddingLeft = '14px';
+                            renderTree(child, wrapper, (node.name === 'root' ? '' : path + node.name + '/'));
+                            item.appendChild(wrapper);
+                        }
+                    } else {
+                        openPath(childPath);
+                        // highlight selection
+                        document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+                        item.classList.add('selected');
+                    }
+                });
+                container.appendChild(item);
+            });
+        }
+
+        renderTree(fs, treeEl, '');
+
+        // helpers for path resolving
+        function resolvePath(path) {
+            const parts = path.split('/').filter(Boolean);
+            let cur = fs;
+            for (const p of parts) {
+                if (!cur.children) return null;
+                const found = cur.children.find(c => c.name === p);
+                if (!found) return null;
+                cur = found;
+            }
+            return cur;
+        }
+
+        function treeCommand(node, depth = 0) {
+            let out = '';
+            (node.children || []).forEach(child => {
+                out += '  '.repeat(depth) + (child.type === 'folder' ? '\u25B6 ' : '\u2022 ') + child.name + '\n';
+                if (child.type === 'folder') out += treeCommand(child, depth + 1);
+            });
+            return out;
+        }
+
+        function openPath(path) {
+            const node = resolvePath(path);
+            if (!node) {
+                appendOutput('open: path not found: ' + path);
+                return;
+            }
+            if (node.type === 'folder') {
+                appendOutput('open: not a file: ' + path);
+                return;
+            }
+            // show file in main pane
+            const content = node.content || '';
+            outputEl.innerHTML = `<div class="path">/${path}</div><div class="file-content">` + escapeHtml(content) + '</div>';
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        }
+
+        function appendOutput(text) {
+            outputEl.innerHTML += '\n' + text;
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+
+        // command parsing
+        function runCommand(raw) {
+            const t = raw.trim();
+            if (!t) return;
+            const parts = t.split(' ');
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+            if (cmd === 'help') {
+                appendOutput('\nCommands:\n - tree\n - open <path>\n - clear\n - ls <path>\n - cat <path>\n - pwd');
+            } else if (cmd === 'tree') {
+                appendOutput('\n' + treeCommand(fs));
+            } else if (cmd === 'clear') {
+                outputEl.innerHTML = '';
+            } else if (cmd === 'open' || cmd === 'cat') {
+                const p = args.join(' ');
+                if (!p) appendOutput('Usage: open <path>'); else openPath(p);
+            } else if (cmd === 'ls') {
+                const p = args.join(' ') || '';
+                const node = p ? resolvePath(p) : fs;
+                if (!node) appendOutput('ls: path not found'); else {
+                    const names = (node.children || []).map(c => (c.type === 'folder' ? c.name + '/' : c.name)).join('\t');
+                    appendOutput(names);
+                }
+            } else if (cmd === 'pwd') {
+                appendOutput('/');
+            } else {
+                appendOutput(cmd + ': command not found');
+            }
+        }
+
+        // typing + keyboard
+        cmdline.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const text = cmdline.innerText;
+                appendOutput('\nC:\\Users\\You> ' + text);
+                runCommand(text);
+                cmdline.innerText = '';
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                // focus tree for accessibility
+                sidebar.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // focus the editable area on load and when clicking terminal
+        document.querySelector('.terminal').addEventListener('click', () => { cmdline.focus(); placeCaretAtEnd(cmdline); });
+        window.addEventListener('load', () => { cmdline.focus(); placeCaretAtEnd(cmdline); });
+
+        // small helper to put caret at end
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+                const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+                const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+            }
+        }
+
+        // allow clicking tree to open default collapsed nodes
+        // open root children by default
+        document.querySelectorAll('#tree > .node').forEach(n => {
+            const caret = n.querySelector('.caret');
+            if (caret) n.click();
+        });
+
+        // prevent pasting styled text
+        cmdline.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand('insertText', false, text);
+        });
+
+        // expose for debugging
+        window._fakefs = fs;
+    </script>
+</body>
+
+</html>

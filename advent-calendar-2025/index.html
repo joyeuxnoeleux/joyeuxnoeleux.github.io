@@ -1,209 +1,534 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>christmasOS — Connexion</title>
-  <!-- Polices Google (si en local, remplacez ou supprimez) -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Courgette&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg1:#0b1221; /* night sky */
-      --bg2:#11304a; /* deep teal */
-      --card:#0f1724;
-      --accent:#ff4d6d; /* festive red */
-      --accent-2:#4ee89a; /* mint */
-      --glass: rgba(255,255,255,0.06);
-      --glass-2: rgba(255,255,255,0.03);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Montserrat,system-ui,Arial,sans-serif;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent), linear-gradient(180deg,var(--bg1),var(--bg2));
-      color:#e6eef6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow:hidden;
-    }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>christmasOS — Desktop (En ligne)</title>
+    <!-- Leaflet CSS (nécessite internet) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/layout.css">
 
-    /* Gentle snow using pseudo elements */
-    .sky{
-      position:fixed;inset:0;pointer-events:none;
-    }
-    .snow{
-      position:absolute;inset:0;background-image:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06) 0 1px, transparent 2px), radial-gradient(circle at 40% 30%, rgba(255,255,255,0.05) 0 1px, transparent 2px), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04) 0 1px, transparent 2px);
-      background-size: 100px 100px, 140px 140px, 200px 200px;
-      animation: drift 18s linear infinite;
-      opacity:0.9;
-      mix-blend-mode:screen;
-    }
-    @keyframes drift{ from{transform:translateY(-20px)} to{transform:translateY(60px)} }
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/android-chrome-512x512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+    <link rel="icon" href="images/favicon/favicon.ico">
+    <link rel="manifest" href="images/favicon/site.webmanifest">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/loader.css">
 
-    /* Subtle stars */
-    .stars{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0 1px, transparent 2px), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.05) 0 1px, transparent 2px);opacity:0.6}
 
-    .container{
-      position:relative;display:grid;place-items:center;height:100vh;padding:32px;
-    }
 
-    /* Logo */
-    .logo{
-      position:absolute;top:48px;left:48px;display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none;
-      filter:drop-shadow(0 6px 18px rgba(0,0,0,0.6));
-    }
-    .logo .tree{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,#0f7a3e,#0b4f29);display:grid;place-items:center;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
-    .logo .tree:before{content:"";width:30px;height:30px;background-image:radial-gradient(circle at 30% 25%, #ffeb7a 0 4px, transparent 6px);border-radius:50%;box-shadow:0 0 14px rgba(255,235,122,0.18)}
-    .logo h1{font-size:18px;margin:0;font-weight:800;letter-spacing:0.4px}
-    .logo p{margin:0;font-size:12px;opacity:0.8}
-
-    /* Login card */
-    .card{
-      width:360px;max-width:92%;background:linear-gradient(180deg,var(--glass),var(--glass-2));border-radius:18px;padding:28px;border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(8px);box-shadow:0 8px 40px rgba(3,6,20,0.6);
-    }
-    .card h2{font-size:20px;margin:0 0 8px;font-weight:800}
-    .card p.lead{margin:0 0 18px;color:#cfe9d9;opacity:0.9}
-
-    .input{
-      display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
-    }
-    label{font-size:12px;opacity:0.8}
-    input[type="text"],input[type="password"]{
-      width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);color:inherit;font-size:14px;outline:none;transition:box-shadow .18s,transform .12s;
-    }
-    input:focus{box-shadow:0 6px 18px rgba(0,0,0,0.45);transform:translateY(-2px)}
-
-    .actions{display:flex;align-items:center;gap:12px;margin:6px 0 40px 0}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(2,6,23,0.6);
-    }
-    .btn:active{transform:translateY(1px)}
-
-    .btn-primary{background:linear-gradient(90deg,var(--accent),#ff7b8f);color:white}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit}
-
-    .small{font-size:12px;opacity:0.85}
-
-    .footer{margin-top:14px;font-size:12px;display:flex;justify-content:space-between;align-items:center;color:#cfe9d9;opacity:0.85}
-
-    /* Elf hat on avatar */\    
-    .avatar{
-      width:84px;height:84px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#0b1620);display:grid;place-items:center;margin:0 auto 12px;position:relative;border:1px solid rgba(255,255,255,0.04);
-    }
-    .avatar .face{font-family:Courgette, cursive;font-size:32px;opacity:0.95}
-    .hat{position:absolute;top:-12px;left:calc(50% - 26px);width:52px;height:26px;border-radius:26px 26px 6px 6px;background:linear-gradient(90deg,#b71c1c,#ff4d6d);box-shadow:0 6px 18px rgba(0,0,0,0.35);transform:rotate(-12deg)}
-    .hat:after{content:'';position:absolute;right:6px;top:-6px;width:12px;height:12px;border-radius:50%;background:white}
-
-    /* Decorative lights */
-    .lights{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;gap:8px;margin: 0 0 30px 0;}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-    .light{width:8px;height:8px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,0.5);animation:blink 1.6s infinite ease-in-out}
-    .l1{background:var(--accent);animation-delay:0s}
-    .l2{background:var(--accent-2);animation-delay:.4s}
-    .l3{background:#ffd26a;animation-delay:.8s}
-    .l4{background:#66a0ff;animation-delay:1.2s}
-    .light{width:8px;height:8px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,0.5)}
-    .l1{background:var(--accent)}.l2{background:var(--accent-2)}.l3{background:#ffd26a}.l4{background:#66a0ff}
-
-    /* Responsive */
-    @media (max-width:420px){
-      .logo{left:18px;top:18px}
-      .card{padding:20px}
-    }
-  </style>
 </head>
+
 <body>
-  <a class="logo" href="#" aria-label="christmasOS">
-    <div class="tree" aria-hidden="true"></div>
-    <div>
-      <h1>christmasOS</h1>
-      <p>Edition festive</p>
-    </div>
-  </a>
+    <div id="loader">
+        <div class="loader-content">
+            <img src="your-logo.png" alt="Logo" class="loader-logo" />
 
-  <div class="sky" aria-hidden="true">
-    <div class="stars"></div>
-    <div class="snow"></div>
-  </div>
-
-  <main class="container">
-    <form class="card" onsubmit="event.preventDefault();signIn()" aria-labelledby="signin-title">
-      <div class="avatar" aria-hidden="true">
-        <div class="hat" role="img" aria-hidden="true"></div>
-        <div class="face">Ho Ho Ho</div>
-      </div>
-
-      <h2 id="signin-title">Connexion — christmasOS</h2>
-      <p class="lead">Bienvenue, ami(e) du Pôle Nord — entre ton identifiant pour commencer.</p>
-
-      <div class="input">
-        <label for="user">Identifiant</label>
-        <input id="user" type="text" placeholder="ex: santa.claus" required autocomplete="username">
-      </div>
-
-      <div class="input">
-        <label for="pass">Mot de passe</label>
-        <input id="pass" type="password" placeholder="********" required autocomplete="current-password">
-      </div>
-
-      <!-- <div style="display:flex;justify-content:space-between;align-items:center">
-        <div class="small"><input id="remember" type="checkbox"> <label for="remember">Se souvenir</label></div>
-        <div class="small"><a href="#">Mot de passe oublié?</a></div>
-      </div> -->
-
-      <div class="actions">
-        <button class="btn btn-primary" type="submit">Se connecter</button>
-        <!-- <button type="button" class="btn btn-ghost" onclick="demoCreds()">Démo</button> -->
-      </div>
-      
-<div>&nbsp</div>
-      <div class="footer">
-        <span>Version 1.0.0 — christmasOS</span>
-        <div>&nbsp</div>
-        <!-- <div style="height: 300px;"></div> -->
-        <div class="lights" aria-hidden="true">
-          <div class="light l1"></div>
-          <div class="light l2"></div>
-          <div class="light l3"></div>
-          <div class="light l4"></div>
+            <div class="loader-animation">
+                <span></span><span></span><span></span><span></span>
+            </div>
         </div>
-      </div>
-    </form>
-  </main>
+    </div>
 
-  <script>
-    function signIn(){
-      const user = document.getElementById('user').value.trim();
-      const pass = document.getElementById('pass').value;
-      if(!user || !pass) return alert('Complète les champs.');
 
-      // Gestion réelle des comptes
-      if(user === 'pere.noel' && pass === 'supernoel'){
-        window.location.href = 'index2.html';
-        return;
-      }
-      if(user === 'lutin1' && pass === 'cheerlutin'){
-        window.location.href = 'index3.html';
-        return;
-      }
 
-      alert('Identifiants incorrects !');
-    }
+    <!-- Desktop -->
+    <div class="desktop">
+        <div class="icon" onclick="openWindow('notes')">
+            <img src="https://cdn-icons-png.flaticon.com/512/3997/3997608.png" alt="notes">
+            <span>Lutins_fun.txt</span>
+        </div>
 
-    function demoCreds(){
-      document.getElementById('user').value = 'santa.claus';
-      document.getElementById('pass').value = 'cheer2025';
-    }
+        <div class="icon" onclick="openWindow('gifts')">
+            <img src="https://cdn-icons-png.flaticon.com/512/744/744922.png" alt="cadeaux">
+            <span>Cadeaux</span>
+        </div>
 
-    // Petit utilitaire pour échapper
-    function escapeHtml(unsafe){
-      return unsafe.replace(/[&\\"'<>]/g, function(m){return {'&':'&amp;','\\':'\\\\','"':'&quot;',"'":"&#39;","<":"&lt;",">":"&gt;"}[m]});
-    }
-  </script>
-  <!-- Effet sonore -->
-  <audio id="jingle" autoplay loop>
-    <source src="jingle.mp3" type="audio/mpeg">
-  </audio>
+        <div class="icon" onclick="openWindow('meteo')">
+            <img src="https://cdn-icons-png.flaticon.com/512/4151/4151022.png" alt="meteo">
+            <span>Météo</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('map')">
+            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="map">
+            <span>Carte</span>
+        </div>
+        <div class="icon" onclick="openWindow('paint')"><img
+                src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png"><span>Paint</span></div>
+        <div class="icon" onclick="openWindow('imageApp')"><img
+                src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png"><span>Image</span></div>
+        <div class="icon" onclick="openWindow('webapp')">
+            <img src="icons/web.png" alt="" />
+            <span>Navigateur</span>
+        </div>
+        <div class="icon" onclick="openWindow('webapp2')">
+            <img src="icons/web.png" alt="" />
+            <span>Navigateur</span>
+        </div>
+        <div class="icon" onclick="openWindow('log')">
+            <img src="icons/web.png" alt="" />
+            <span>Log</span>
+        </div>
+
+    </div>
+
+    <!-- Popup windows -->
+    <div class="window" id="notes">
+        <div class="titlebar" onmousedown="dragStart(event,'notes')">Lutins_fun.txt <span class="close"
+                onclick="closeWindow('notes')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;overflow:auto;height:100%">
+                <p>Pour le père Noel</p><br>
+                • N'oublie pas de nourrir les rennes.<br>
+                • Le lutin 7 a encore perdu ses chaussettes.<br>
+                • La machine à emballer fait des étincelles... encore.<br>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="gifts">
+        <div class="titlebar" onmousedown="dragStart(event,'gifts')">Cadeaux <span class="close"
+                onclick="closeWindow('gifts')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;">Liste de cadeaux en fabrication...</div>
+        </div>
+    </div>
+
+    <div class="window" id="meteo">
+        <div class="titlebar" onmousedown="dragStart(event,'meteo')">Météo <span class="close"
+                onclick="closeWindow('meteo')">X</span></div>
+        <div class="content">
+            <div style="padding:12px;">Pôle Nord : -18°C ❄️ Neige légère.</div>
+        </div>
+    </div>
+
+    <!-- Map application (online Leaflet) -->
+    <div class="window" id="map">
+        <div class="titlebar" onmousedown="dragStart(event,'map')">Carte - Ou est le père Noël<span class="close"
+                onclick="closeWindow('map')">X</span></div>
+        <div class="content" id="mapContent">
+            <div id="leafletMap"></div>
+        </div>
+    </div>
+
+    <!-- Paint Application Avancée -->
+    <div class="window" id="paint">
+        <div class="titlebar" onmousedown="dragStart(event,'paint')">
+            Paint <span class="close" onclick="closeWindow('paint')">X</span>
+        </div>
+        <div class="content">
+            <div class="toolbar">
+                <label>Couleur:</label>
+                <input type="color" id="colorPicker" value="#000000">
+                <label>Taille:</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5">
+                <label>Outil:</label>
+                <select id="toolSelect">
+                    <option value="brush">Crayon</option>
+                    <option value="marker">Marqueur</option>
+                    <option value="spray">Spray</option>
+                    <option value="eraser">Gomme</option>
+                </select>
+                <button id="clearBtn">Effacer tout</button>
+                <button id="undoBtn">Undo</button>
+                <button id="redoBtn">Redo</button>
+                <button id="downloadBtn">Télécharger</button>
+            </div>
+            <canvas id="paintCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Tetris fonctionnel
+    <div class="window" id="tetris">
+        <div class="titlebar" onmousedown="dragStart(event,'tetris')">
+            Tetris <span class="close" onclick="closeWindow('tetris')">X</span>
+        </div>
+        <div class="content">
+            <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+        </div>
+    </div> -->
+
+    <!-- Application Web (iframe) -->
+    <div class="window" id="webapp" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp')">
+            Web Viewer <span class="close" onclick="closeWindow('webapp')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="https://drive.google.com/file/d/10k6Wz1vlLIaNcm7IjvDxEyhJeNyTR0dm/preview"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="window" id="webapp2" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp2')">
+            Web Viewer <span class="close" onclick="closeWindow('webapp2')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe"
+                src="https://www.dropbox.com/scl/fi/tdmuq04eex2sd5dwc7hqx/Jour24.mp4?rlkey=kmtl7fg1rfdzcxieh1w6rfdw6&raw=1"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Application Web (iframe) -->
+    <div class="window" id="tetris" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'tetris')">
+            Web Viewer <span class="close" onclick="closeWindow('tetris')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="./Pages/Jeux/Tetris/index.html"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+    <!-- Application Web (iframe) -->
+    <div class="window" id="log" style="display:none; width: 1200px; height: 700px;">
+        <div class="titlebar" onmousedown="dragStart(event,'log')">
+            Web Viewer <span class="close" onclick="closeWindow('log')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="./Pages/Secure_log/index.html"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <!-- <div class="app-launcher" onclick="openWindow('notes')">📜 Notes</div>
+        <div class="app-launcher" onclick="openWindow('gifts')">🎁 Cadeaux</div>
+        <div class="app-launcher" onclick="openWindow('meteo')">❄️ Météo</div>
+        <div class="app-launcher" onclick="openWindow('map')">🗺️ Carte</div>
+        <div class="app-launcher" onclick="openWindow('paint')">🗺️ Paint</div>
+        <div class="app-launcher" onclick="openWindow('tetris')">🗺️ Tetris</div> -->
+        <main class="container bg-primary">
+            <div class="grid-container">
+                <aside class="sidebar">
+                    <nav>
+                        <li class="hamburger">
+                            <img class="width-small" src="images/side-menu/hamburger.png" alt="hamburger button">
+                        </li>
+
+                        <ul>
+                            <li><img class="width-small" src="images/side-menu/user.png" alt="User Image"></li>
+                            <li><img class="width-small" src="images/side-menu/document.png" alt="Documents icon"></li>
+                            <li><img class="width-small" src="images/side-menu/pictures.png" alt="Pictures icon"></li>
+                            <li><img class="width-small" src="images/side-menu/settings.png" alt="Settings icon"></li>
+                            <li><img class="width-small" src="images/side-menu/power.png" alt="Power button icon"></li>
+                        </ul>
+                    </nav>
+
+                    <div class="sidebar-icons scrollbar">
+                        <ul>
+                            <!-- Recently added -->
+                            <li>Recently added</li>
+                            <li><img class="width-medium" src="images/program-icons/photoshop.svg"
+                                    alt="photoshop icon">Adobe Photoshop 2020</li>
+                            <li><img class="width-medium" src="images/program-icons/vlc.svg" alt="vlc icon">VLC Media
+                                Player Skinned</li>
+                            <li><img class="width-medium" src="images/program-icons/vlc.svg" alt="vlc icon">VLC Media
+                                Player</li>
+
+                            <!-- Most used -->
+                            <!-- <li>Most Used</li>
+                            <li><img class="width-medium" src="images/program-icons/firefox.svg" alt="firefox">Firefox
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/vscode.svg"
+                                    alt="visual studio code">Visual Studio Code</li>
+                            <li><img class="width-medium" src="images/program-icons/microsoft todo.svg"
+                                    alt="microsoft todo">Microsoft To Do</li>
+                            <li><img class="width-medium" src="images/program-icons/groove.svg"
+                                    alt="groove music">Groove Music</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git Bash</li> -->
+
+                            <!-- A -->
+                            <li>A</li>
+                            <li><img class="width-medium" src="images/program-icons/Access.svg" alt="access icon">Access
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/photoshop.svg"
+                                    alt="adobe photoshop">Adobe Photoshop 2020</li>
+                            <li><img class="width-medium" src="images/program-icons/acrobat.svg"
+                                    alt="adobe acrobat icon">Adobe Acrobat DC</li>
+                            <li><img class="width-medium" src="images/program-icons/alarm.svg" alt="alarm icon">Alarms &
+                                Clock</li>
+
+                            <!-- C -->
+                            <li>C</li>
+                            <li><img class="width-medium" src="images/program-icons/calculator.svg"
+                                    alt="calculator icon">Calculator</li>
+                            <li><img class="width-medium" src="images/program-icons/calendar.svg"
+                                    alt="calender icon">Calender</li>
+                            <li><img class="width-medium" src="images/program-icons/camera.svg" alt="camera icon">Camera
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/cortana.svg" alt="cortana">Cortana
+                            </li>
+
+                            <!-- D -->
+                            <li>D</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg" alt="daum">Daum</li>
+
+                            <!-- E -->
+                            <li>E</li>
+                            <li><img class="width-medium" src="images/program-icons/excel.svg" alt="excel icon">Excel
+                            </li>
+
+                            <!-- F -->
+                            <li>F</li>
+                            <li><img class="width-medium" src="images/program-icons/feedback hub.svg"
+                                    alt="feedback">Feedback</li>
+                            <li><img class="width-medium" src="images/program-icons/firefox.svg" alt="firefox">Firefox
+                            </li>
+
+                            <!-- G -->
+                            <li>G</li>
+                            <li><img class="width-medium" src="images/program-icons/get-help.svg"
+                                    alt="get help icon">Get Help</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git Bash</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git CMD</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git Release Notes</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git FAQ</li>
+                            <li><img class="width-medium" src="images/program-icons/git-bash.ico"
+                                    alt="git bash icon">Git GUI</li>
+                            <li><img class="width-medium" src="images/program-icons/chrome.svg" alt="chrome icon">Google
+                                Chrome</li>
+                            <li><img class="width-medium" src="images/program-icons/groove.svg" alt="groove icon">Groove
+                                Music</li>
+
+                            <!-- I -->
+                            <li>I</li>
+                            <li><img class="width-medium" src="images/program-icons/intel-icon.svg"
+                                    alt="intel icon">Intel</li>
+
+                            <!-- L -->
+                            <li>L</li>
+                            <li><img class="width-medium" src="images/program-icons/lightroom.svg"
+                                    alt="lightroom">Lightroom</li>
+
+                            <!-- M -->
+                            <li>M</li>
+                            <li><img class="width-medium" src="images/program-icons/mail.svg" alt="mail icon">Mail</li>
+                            <li><img class="width-medium" src="images/program-icons/location.svg" alt="map icon">Map
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/edge.svg" alt="edge icon">Microsoft
+                                Edge</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">Microsoft Office Tools</li>
+                            <li><img class="width-medium" src="images/program-icons/solitaire.svg"
+                                    alt="solitiare icon">Microsoft Solitaire Collection</li>
+                            <li><img class="width-medium" src="images/program-icons/microsoft-store.svg"
+                                    alt="store icon">Microsoft Store</li>
+                            <li><img class="width-medium" src="images/program-icons/microsoft todo.svg"
+                                    alt="microsoft todo icon">Microsoft To Do</li>
+                            <li><img class="width-medium" src="images/program-icons/movies-tv.svg"
+                                    alt="movies & TV icon">Movies & TV</li>
+
+                            <!-- O -->
+                            <li>O</li>
+                            <li><img class="width-medium" src="images/program-icons/office.svg" alt="office icon">Office
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/onedrive.svg"
+                                    alt="onedrive icon">OneDrive</li>
+                            <li><img class="width-medium" src="images/program-icons/onenote.svg"
+                                    alt="onenote icon">OneNote</li>
+                            <li><img class="width-medium" src="images/program-icons/outlook.svg"
+                                    alt="outlook icon">Outlook</li>
+
+                            <!-- P -->
+                            <li>P</li>
+                            <li onclick="openWindow('paint')"><img class="width-medium"
+                                    src="images/program-icons/paint-3d.svg" alt="paint icon">Paint
+                                3D</li>
+                            <li><img class="width-medium" src="images/program-icons/people.svg" alt="people icon">People
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/photos.svg" alt="photos icon">Photos
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/picasa.svg"
+                                    alt="picasa 3 icon">Picasa</li>
+                            <li><img class="width-medium" src="images/program-icons/powerpoint.svg"
+                                    alt="powerpoint icon">Powerpoint</li>
+                            <li><img class="width-medium" src="images/program-icons/project.svg" alt="project">Project
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/publisher.svg"
+                                    alt="publisher">Publisher</li>
+
+                            <!-- S -->
+                            <li>S</li>
+                            <li><img class="width-medium" src="images/program-icons/settings.svg"
+                                    alt="settings icon">Settings</li>
+                            <li><img class="width-medium" src="images/program-icons/skype.svg" alt="skype icon">Skype
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/skype-for-business.svg"
+                                    alt="skype for business icon">Skype for business</li>
+                            <li><img class="width-medium" src="images/program-icons/snip-sketch.svg"
+                                    alt="snip & sketch icon">Snip & Sketch</li>
+                            <li><img class="width-medium" src="images/program-icons/sticky-notes.svg"
+                                    alt="sticky note icon">Sticky Notes</li>
+
+                            <!-- T -->
+                            <li>T</li>
+                            <li><img class="width-medium" src="images/program-icons/tips.svg" alt="tips icon">Tips</li>
+
+                            <!-- V -->
+                            <li>V</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">VideoLAN</li>
+                            <li><img class="width-medium" src="images/program-icons/microsoft-visio.svg"
+                                    alt="visio icon">Visio</li>
+                            <li><img class="width-medium" src="images/program-icons/vscode.svg" alt="folder icon">Visual
+                                Studio Code</li>
+
+                            <!-- W -->
+                            <li>W</li>
+                            <li><img class="width-medium" src="images/program-icons/weather.svg"
+                                    alt="weather icon">Weather</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">Windows Accessories</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">Windows Administrative Tools</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg" alt="folder icon">Ease
+                                of Access</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">PowerShell</li>
+                            <li><img class="width-medium" src="images/program-icons/defender.svg"
+                                    alt="security">Security</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg"
+                                    alt="folder icon">Windows System</li>
+                            <li><img class="width-medium" src="images/program-icons/folder.svg" alt="folder icon">WinRAR
+                            </li>
+                            <li><img class="width-medium" src="images/program-icons/microsoft-word.svg"
+                                    alt="word icon">Word</li>
+
+                            <!-- X -->
+                            <li>X</li>
+                            <li><img class="width-medium" src="images/program-icons/xbox.svg" alt="xbox icon">Xbox</li>
+
+                            <!-- Y -->
+                            <li>Y</li>
+                            <li><img class="width-medium" src="images/program-icons/your-phone.svg"
+                                    alt="your phone icon">Your Phone</li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Main content -->
+                <header class="applications scrollbar">
+                    <p>Application</p>
+                    <div class="main-container">
+                        <div class="box office" onclick="openWindow('tetris')">
+                            <img class="width-large" src="images/program-icons/office-white.svg" alt="microsoft office">
+                            <p>Office</p>
+                        </div>
+
+                        <div class="box bg-secondary todo">
+                            <img class="width-large" src="images/program-icons/microsoft todo.svg" alt="todo">
+                            <p>To Do</p>
+                        </div>
+
+                        <div class="box bg-secondary ">
+                            <img class="width-large" src="images/program-icons/edge.svg" alt="edge browser">
+                            <p>Microsoft Edge</p>
+                        </div>
+
+                        <div class="box photos bg-animation">
+                            <p>Photos</p>
+                        </div>
+
+                        <div class="box onenote">
+                            <img class="width-large" src="images/program-icons/onenote.svg" alt="one note">
+                            <p>OneNote</p>
+                        </div>
+
+                        <div class="box bg-secondary stickers">
+                            <img class="width-large" src="images/program-icons/sticky-notes.svg" alt="stickie notes">
+                            <p>Stickies</p>
+                        </div>
+
+                        <div class="box bg-secondary powerpoint">
+                            <img class="width-large" src="images/program-icons/powerpoint.svg" alt="powerpoint">
+                            <p>PowerPoint 2019</p>
+                        </div>
+
+                        <div class="box bg-secondary edge">
+                            <img class="width-large" src="images/program-icons/adobe-xd.svg" alt="adobe XD">
+                            <p>Adobe XD</p>
+                        </div>
+
+                        <div class="box bg-secondary calender">
+                            <div>
+                                <h3>Thursday</h3>
+                                <h4>5</h4>
+                            </div>
+                        </div>
+
+                        <div class="box bg-secondary keep">
+                            <img class="width-large" src="images/program-icons/google-keep.svg" alt="google keep">
+                            <p>Google Keep - Notes and Lists</p>
+                        </div>
+
+                        <div class="box bg-secondary groove">
+                            <img class="width-large" src="images/program-icons/groove.svg" alt="groove">
+                            <p>Groove Music</p>
+                        </div>
+
+                        <div class="box bg-secondary calculator">
+                            <img class="width-large" src="images/program-icons/microsoft-store.svg" alt="store icon">
+                            <p>Microsoft Store</p>
+                        </div>
+
+                        <div class="box bg-secondary excel">
+                            <img class="width-large" src="images/program-icons/excel.svg" alt="">
+                            <p>Excel</p>
+                        </div>
+                    </div>
+                </header>
+            </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="start" onclick="toggleStart()">🎄 Start</div>
+        <div id="clock" class="clock"></div>
+    </div>
+
+    <!-- Lutins notes on desktop -->
+    <!-- <div class="note" style="top:120px;left:40px">N’oublie pas de nourrir les rennes ! 🦌</div>
+  <div class="note" style="top:280px;left:220px;transform:rotate(3deg)">La machine à cadeaux fait encore des bruits bizarres…</div>
+  <div class="note" style="top:180px;right:60px">Le lutin 7 a encore perdu ses chaussettes.</div> -->
+
+    <!-- Map controls (buttons) -->
+    <div class="map-controls" id="mapControls" style="display:none">
+        <button id="zoomInBtn">+</button>
+        <button id="zoomOutBtn">−</button>
+        <button id="locateBtn">📍 Laponie</button>
+    </div>
+
+    <!-- Leaflet JS (nécessite internet) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="js/paint.js"></script>
+    <script src="js/map.js"></script>
+
+    <script src="js/windows.js"></script>
+    <script src="js/start.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="webapp.js"></script>
+
+
 </body>
+
 </html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fake Email UI — Responsive</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#5eead4; --glass:rgba(255,255,255,0.03);
+      --radius:12px; --max-width:1200px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;background:linear-gradient(180deg,#071023 0%, #071229 60%);color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:20px;
+      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    }
+    .app{
+      width:100%;max-width:var(--max-width);height:80vh;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:18px;box-shadow:0 10px 30px rgba(2,6,23,0.7);overflow:hidden;display:grid;grid-template-columns:340px 1fr;
+    }
+
+    /* Responsive: single column on small screens */
+    @media (max-width:720px){
+      .app{grid-template-columns:1fr;height:92vh}
+      .list-pane{height:100%;}
+      .content-pane{display:none}
+      .content-pane.open{display:block;position:fixed;inset:0;background:linear-gradient(180deg, rgba(2,6,23,0.95), rgba(2,6,23,0.98));z-index:50;padding:24px}
+    }
+
+    .topbar{display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:flex;align-items:center;justify-content:center;color:#042027;font-weight:700}
+    .title{font-size:16px;font-weight:600}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .list-pane{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);backdrop-filter:blur(6px);padding:12px;display:flex;flex-direction:column}
+    .search{padding:12px;border-radius:12px;background:var(--glass);display:flex;align-items:center;gap:8px;margin:12px}
+    .search input{flex:1;background:transparent;border:0;color:inherit;outline:none}
+
+    .folders{display:flex;gap:8px;padding:0 12px 8px 12px;margin-bottom:6px}
+    .folder{padding:8px 10px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
+
+    .inbox-list{overflow:auto;padding:8px 6px}
+    .email-item{display:flex;gap:12px;padding:12px;border-radius:12px;align-items:center;cursor:pointer;margin:6px 6px}
+    .email-item:hover{background:rgba(255,255,255,0.02)}
+    .email-item.active{background:linear-gradient(90deg, rgba(94,234,212,0.08), rgba(96,165,250,0.05));box-shadow:inset 0 0 0 1px rgba(94,234,212,0.04)}
+
+    .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .meta{flex:1;min-width:0}
+    .meta .row{display:flex;justify-content:space-between;align-items:center}
+    .meta .from{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meta .subject{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .time{font-size:12px;color:var(--muted);min-width:54px;text-align:right}
+
+    .content-pane{padding:22px;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));display:flex;flex-direction:column}
+    .content-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:14px;box-shadow:0 8px 20px rgba(2,6,23,0.6);height:100%;overflow:auto}
+    .content-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+    .content-subject{font-size:20px;font-weight:700}
+    .content-from{color:var(--muted);font-size:13px}
+
+    .content-body{line-height:1.6;color:#d7e6f4;margin-top:12px}
+    .controls{display:flex;gap:10px;margin-left:auto}
+    .btn{padding:8px 12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);cursor:default;font-size:13px;color:var(--muted)}
+
+    /* empty state */
+    .empty{display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--muted);gap:8px;height:100%}
+
+    /* small tweaks */
+    ::-webkit-scrollbar{height:8px;width:8px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.03);border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="app" role="application">
+    <aside class="list-pane" aria-label="Mail list">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">FE</div>
+          <div>
+            <div class="title">FakeEmail</div>
+            <div class="subtitle">no sending — preview only</div>
+          </div>
+        </div>
+        <div style="margin-left:auto; font-size:13px;color:var(--muted)">Signed in as <strong>you@local.test</strong></div>
+      </div>
+
+      <div class="search" role="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/></svg>
+        <input id="searchInput" placeholder="Search emails" aria-label="Search emails" />
+      </div>
+
+      <div class="folders" role="list">
+        <div class="folder">Inbox</div>
+        <div class="folder">Starred</div>
+        <div class="folder">Archive</div>
+      </div>
+
+      <div class="inbox-list" id="inboxList" role="list"></div>
+    </aside>
+
+    <main class="content-pane" id="contentPane" aria-live="polite">
+      <div class="content-card" id="contentCard">
+        <div class="empty" id="emptyState">
+          <svg width="90" height="90" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M3 8.5V6a2 2 0 0 1 2-2h14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><path d="M21 8.5v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/></svg>
+          <div style="font-weight:600">No message selected</div>
+          <div style="font-size:13px;color:var(--muted);max-width:420px;text-align:center">Click an email on the left to open and read it. This UI is for preview only — there is no compose or send functionality.</div>
+        </div>
+
+        <article id="messageView" style="display:none">
+          <div class="content-header">
+            <div class="avatar" id="msgAvatar">A</div>
+            <div style="min-width:0">
+              <div class="content-subject" id="msgSubject">Subject goes here</div>
+              <div class="content-from" id="msgFrom">From — <span id="msgEmail">someone@domain.test</span> • <span id="msgTime">Now</span></div>
+            </div>
+            <div class="controls" role="toolbar">
+              <div class="btn" id="btnBack" title="Back to list">Back</div>
+              <div class="btn" id="btnMark" title="Mark as unread">Mark unread</div>
+            </div>
+          </div>
+
+          <div class="content-body" id="msgBody">
+            <p>Hello —</p>
+            <p>This is a sample message. The content below is static and intended for UI/demo purposes. You cannot reply or compose in this demo.</p>
+          </div>
+        </article>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Sample message data
+    const MESSAGES = [
+      {id:1, from:'Carole Lopez', email:'carole@acme.test', subject:'Quarterly results — highlights', snippet:'The new report shows a steady growth across the product lines...', time:'Nov 20', body:`Hi team,<br/><br/>Our Q3 results are promising. Key highlights include an increase in conversion by 7% and reduced churn. Let's discuss at the next sync.<br/><br/>— Carole`},
+      {id:2, from:'Booking', email:'noreply@hotel.test', subject:'Your booking confirmation', snippet:'Thanks for booking with us. Your reservation ID is ...', time:'Nov 19', body:`Thanks for booking with us. Your reservation is confirmed.`},
+      {id:3, from:'Newsletter', email:'news@weekly.test', subject:'Top stories this week', snippet:'A short recap of the most important stories...', time:'Nov 17', body:`Welcome to this week's digest of updates...`},
+      {id:4, from:'Dimitri', email:'dim@friends.test', subject:'Weekend plans?', snippet:'Want to go for a hike on Sunday?', time:'Nov 15', body:`Hey! Are you free on Sunday to go hiking?`}
+    ];
+
+    const inboxList = document.getElementById('inboxList');
+    const contentPane = document.getElementById('contentPane');
+    const messageView = document.getElementById('messageView');
+    const emptyState = document.getElementById('emptyState');
+
+    let activeId = null;
+
+    function renderList(filter=''){
+      inboxList.innerHTML='';
+      const filtered = MESSAGES.filter(m => (m.subject+m.from+m.snippet+m.email).toLowerCase().includes(filter.toLowerCase()));
+      if(filtered.length===0){
+        inboxList.innerHTML = '<div style="padding:16px;color:var(--muted)">No messages</div>';
+        return;
+      }
+      filtered.forEach(m=>{
+        const el = document.createElement('div');
+        el.className = 'email-item'+(m.id===activeId? ' active':'');
+        el.tabIndex = 0;
+        el.setAttribute('role','button');
+        el.innerHTML = `
+          <div class="avatar">${m.from.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+          <div class="meta">
+            <div class="row"><div class="from">${m.from}</div><div class="time">${m.time}</div></div>
+            <div class="subject">${m.subject} — <span style="color:var(--muted)">${m.snippet}</span></div>
+          </div>`;
+        el.addEventListener('click', ()=> openMessage(m.id));
+        el.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openMessage(m.id)});
+        inboxList.appendChild(el);
+      })
+    }
+
+    function openMessage(id){
+      const msg = MESSAGES.find(x=>x.id===id);
+      if(!msg) return;
+      activeId = id;
+      // Update list UI
+      document.querySelectorAll('.email-item').forEach(el=> el.classList.remove('active'));
+      const listItems = Array.from(document.querySelectorAll('.email-item'));
+      const idx = MESSAGES.findIndex(x=>x.id===id);
+      if(listItems[idx]) listItems[idx].classList.add('active');
+
+      // Fill content
+      document.getElementById('msgAvatar').textContent = msg.from.split(' ').map(x=>x[0]).slice(0,2).join('');
+      document.getElementById('msgSubject').textContent = msg.subject;
+      document.getElementById('msgFrom').innerHTML = `From — <strong>${msg.from}</strong> &lt;${msg.email}&gt; • <span id='msgTime'>${msg.time}</span>`;
+      document.getElementById('msgBody').innerHTML = msg.body;
+
+      emptyState.style.display='none';
+      messageView.style.display='block';
+
+      // mobile behaviour: show full-screen message
+      if(window.matchMedia('(max-width:720px)').matches){
+        contentPane.classList.add('open');
+      }
+    }
+
+    function closeMessage(){
+      activeId = null;
+      document.querySelectorAll('.email-item').forEach(el=> el.classList.remove('active'));
+      emptyState.style.display='flex';
+      messageView.style.display='none';
+      contentPane.classList.remove('open');
+      renderList(document.getElementById('searchInput').value);
+    }
+
+    // Wire buttons
+    document.getElementById('btnBack').addEventListener('click', closeMessage);
+    document.getElementById('btnMark').addEventListener('click', ()=> alert('This demo cannot modify messages (preview only).'));
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e)=> renderList(e.target.value));
+
+    // initial render
+    renderList();
+
+    // keyboard accessibility: close with Escape when viewing
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && document.getElementById('messageView').style.display === 'block') closeMessage();
+    });
+  </script>
+</body>
+</html>
