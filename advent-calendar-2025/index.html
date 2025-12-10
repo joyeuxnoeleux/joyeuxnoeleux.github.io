@@ -46,35 +46,49 @@
             <span>Lutins_fun.txt</span>
         </div>
 
-        <div class="icon" onclick="openWindow('gifts')">
-            <img src="https://cdn-icons-png.flaticon.com/512/744/744922.png" alt="cadeaux">
-            <span>Cadeaux</span>
-        </div>
-
-        <div class="icon" onclick="openWindow('meteo')">
-            <img src="https://cdn-icons-png.flaticon.com/512/4151/4151022.png" alt="meteo">
-            <span>Météo</span>
-        </div>
-
         <div class="icon" onclick="openWindow('map')">
-            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="map">
+            <img src="images/icon/plans.png" alt="map">
             <span>Carte</span>
         </div>
-        <div class="icon" onclick="openWindow('paint')"><img
-                src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png"><span>Paint</span></div>
-        <div class="icon" onclick="openWindow('imageApp')"><img
-                src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png"><span>Image</span></div>
+
+        <div class="icon" onclick="openWindow('paint')">
+            <img src="images/icon/couleurs.png">
+            <span>Paint</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('imageApp')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png">
+            <span>Image</span>
+        </div>
+
         <div class="icon" onclick="openWindow('webapp')">
-            <img src="icons/web.png" alt="" />
-            <span>Navigateur</span>
+            <img src="images/icon/christmas-elf(1).png" alt="" />
+            <span>Noël 2024</span>
         </div>
+
         <div class="icon" onclick="openWindow('webapp2')">
-            <img src="icons/web.png" alt="" />
-            <span>Navigateur</span>
+            <img src="images/icon/christmas-elf(2).png" alt="" />
+            <span>Noël 2023</span>
         </div>
+
         <div class="icon" onclick="openWindow('log')">
-            <img src="icons/web.png" alt="" />
+            <img src="images/icon/mot-de-passe.png" alt="" />
             <span>Log</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('webapp3')">
+            <img src="images/icon/christmas-elf(3).png" alt="" />
+            <span>Noël 2022</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('webapp4')">
+            <img src="images/icon/christmas-elf(4).png" alt="" />
+            <span>Noël 2021</span>
+        </div>
+
+        <div class="icon" onclick="openWindow('webapp5')">
+            <img src="images/icon/christmas-elf(5).png" alt="" />
+            <span>Noël 2020</span>
         </div>
 
     </div>
@@ -90,22 +104,6 @@
                 • Le lutin 7 a encore perdu ses chaussettes.<br>
                 • La machine à emballer fait des étincelles... encore.<br>
             </div>
-        </div>
-    </div>
-
-    <div class="window" id="gifts">
-        <div class="titlebar" onmousedown="dragStart(event,'gifts')">Cadeaux <span class="close"
-                onclick="closeWindow('gifts')">X</span></div>
-        <div class="content">
-            <div style="padding:12px;">Liste de cadeaux en fabrication...</div>
-        </div>
-    </div>
-
-    <div class="window" id="meteo">
-        <div class="titlebar" onmousedown="dragStart(event,'meteo')">Météo <span class="close"
-                onclick="closeWindow('meteo')">X</span></div>
-        <div class="content">
-            <div style="padding:12px;">Pôle Nord : -18°C ❄️ Neige légère.</div>
         </div>
     </div>
 
@@ -145,20 +143,10 @@
         </div>
     </div>
 
-    <!-- Tetris fonctionnel
-    <div class="window" id="tetris">
-        <div class="titlebar" onmousedown="dragStart(event,'tetris')">
-            Tetris <span class="close" onclick="closeWindow('tetris')">X</span>
-        </div>
-        <div class="content">
-            <canvas id="tetrisCanvas" width="300" height="600"></canvas>
-        </div>
-    </div> -->
-
     <!-- Application Web (iframe) -->
     <div class="window" id="webapp" style="display:none; width: 700px; height: 500px;">
         <div class="titlebar" onmousedown="dragStart(event,'webapp')">
-            Web Viewer <span class="close" onclick="closeWindow('webapp')">X</span>
+            Noël 2024 <span class="close" onclick="closeWindow('webapp')">X</span>
         </div>
         <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
             <iframe id="webapp-iframe" src="https://drive.google.com/file/d/10k6Wz1vlLIaNcm7IjvDxEyhJeNyTR0dm/preview"
@@ -169,7 +157,7 @@
 
     <div class="window" id="webapp2" style="display:none; width: 700px; height: 500px;">
         <div class="titlebar" onmousedown="dragStart(event,'webapp2')">
-            Web Viewer <span class="close" onclick="closeWindow('webapp2')">X</span>
+            Noël 2023 <span class="close" onclick="closeWindow('webapp2')">X</span>
         </div>
         <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
             <iframe id="webapp-iframe"
@@ -179,10 +167,42 @@
         </div>
     </div>
 
-    <!-- Application Web (iframe) -->
+    <div class="window" id="webapp3" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp3')">
+            Noël 2022 <span class="close" onclick="closeWindow('webapp3')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="https://joyeuxnoeleux.github.io/Noel_2022"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="window" id="webapp4" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp4')">
+            Noël 2021 <span class="close" onclick="closeWindow('webapp4')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src="https://joyeuxnoeleux.github.io/Noel_2021"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="window" id="webapp5" style="display:none; width: 700px; height: 500px;">
+        <div class="titlebar" onmousedown="dragStart(event,'webapp5')">
+            Noël 2020 <span class="close" onclick="closeWindow('webapp5')">X</span>
+        </div>
+        <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
+            <iframe id="webapp-iframe" src=" https://joyeuxnoeleux.github.io/Noel_2020"
+                style="flex:1; border:none; background:white;">
+            </iframe>
+        </div>
+    </div>
+
     <div class="window" id="tetris" style="display:none; width: 700px; height: 500px;">
         <div class="titlebar" onmousedown="dragStart(event,'tetris')">
-            Web Viewer <span class="close" onclick="closeWindow('tetris')">X</span>
+            Tetris <span class="close" onclick="closeWindow('tetris')">X</span>
         </div>
         <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
             <iframe id="webapp-iframe" src="./Pages/Jeux/Tetris/index.html"
@@ -190,10 +210,10 @@
             </iframe>
         </div>
     </div>
-    <!-- Application Web (iframe) -->
+
     <div class="window" id="log" style="display:none; width: 1200px; height: 700px;">
         <div class="titlebar" onmousedown="dragStart(event,'log')">
-            Web Viewer <span class="close" onclick="closeWindow('log')">X</span>
+            Log <span class="close" onclick="closeWindow('log')">X</span>
         </div>
         <div class="content" style="padding:0; height: calc(100% - 30px); display:flex; flex-direction:column;">
             <iframe id="webapp-iframe" src="./Pages/Secure_log/index.html"
